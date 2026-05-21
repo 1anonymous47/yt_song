@@ -32,6 +32,7 @@ def initdb():
             tittle VARCHAR(100),
             audiosrc VARCHAR(24),
             videosrc VARCHAR(255),
+            duration VARCHAR(12),
             status INTEGER NOT NULL DEFAULT 0
         )
         """)

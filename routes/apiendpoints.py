@@ -232,7 +232,7 @@ def playlistgetter():
 
     for i in rows:
         print(i)
-        details[i[1]]=[i[2],i[4],i[3]]
+        details[i[1]]=[i[2],i[4],i[3],i[5]]
 
     # for i in playlist[data]:
     #     details[i]=songdetails[i]
@@ -272,7 +272,7 @@ def downloader():
             return jsonify({"data":"Invalid Url"})
         else:
 
-            sqcursor.execute("INSERT into tbl_songs (songid,tittle,audiosrc,videosrc) VALUES (?,?,?,?)", (res[3],res[0],res[2],res[1],))
+            sqcursor.execute("INSERT into tbl_songs (songid,tittle,audiosrc,videosrc,duration) VALUES (?,?,?,?,?)", (res[3],res[0],res[2],res[1],res[4],))
             # songdetails[res[3]]=[res[0],res[1],res[2]]
             return jsonify({"data":"success",'audiosrc':'static/audios/'+res[2],'videosrc':res[1],'audiotittle':res[0],'audioid':res[3]})
         # else:
@@ -302,8 +302,11 @@ def audiodownloader(url):
             for i in range(len(temp)):
                 if(temp[i]['audio_ext']!="none" and temp[i]['audio_ext']=="webm"):
                     audiosrc=info["id"]+"."+temp[i]['audio_ext']
-            return tittle,thumbnail,audiosrc,audioid
+
+            duration = info["duration"]
+            return tittle,thumbnail,audiosrc,audioid,duration
         except Exception as e:
+            print("Error is ",e)
             return "err"
 
 

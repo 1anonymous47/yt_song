@@ -1,0 +1,7 @@
+.backups/
+data.json
+packages/__pycache__/
+routes/__pycache__/
+sql.db
+static/audios/
+test.py

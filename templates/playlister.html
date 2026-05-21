@@ -189,6 +189,7 @@
         </header>
 
         <!-- Content Canvas -->
+        <!-- Content Canvas -->
         <section class="pt-24 px-4 lg:px-margin-desktop">
             <div class="flex justify-between items-end mb-stack-lg">
                 <div>
@@ -198,13 +199,14 @@
             </div>
 
             <!-- Song List Responsive Table Container -->
-            <div class="glass-panel rounded-xl overflow-x-auto border border-outline-variant/10 mb-stack-lg">
-                <table class="w-full text-left border-collapse min-w-[600px] lg:min-w-full">
+            <div class="glass-panel rounded-xl overflow-hidden border border-outline-variant/10 mb-stack-lg w-full">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead>
                         <tr class="text-label-md text-on-surface-variant border-b border-outline-variant/10 bg-surface-container-low/50">
-                            <th scope="col" class="px-6 py-4 font-semibold w-16">#</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">Title</th>
-                            <th scope="col" class="px-6 py-4 font-semibold text-right w-24">Actions</th>
+                            <th scope="col" class="px-3 py-4 font-semibold w-12 text-center">#</th>
+                            <th scope="col" class="px-3 py-4 font-semibold w-auto">Title</th>
+                            <th scope="col" class="hidden sm:table-cell px-3 py-4 font-semibold w-20 text-center">Duration</th>
+                            <th scope="col" class="px-3 py-4 font-semibold text-right w-28">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="songs-tbody" class="divide-y divide-outline-variant/5">
@@ -272,6 +274,7 @@
         let value = [];
         let audio = null;
         let isPlaying = false;
+        let songQueue = []; // Queue processing line
 
         // UI Element Selectors
         const songsTbody = document.getElementById('songs-tbody');
@@ -286,7 +289,6 @@
         const sideNav = document.getElementById('side-nav');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-        // Mobile responsive sidebar toggler
         function toggleMobileSidebar() {
             const isHidden = sideNav.classList.contains('-translate-x-full');
             if (isHidden) {
@@ -302,7 +304,7 @@
 
         // Format timestamps cleanly
         function formatTime(secs) {
-            if (isNaN(secs)) return "0:00";
+            if (isNaN(secs) || secs === null) return "0:00";
             const m = Math.floor(secs / 60);
             const s = Math.floor(secs % 60).toString().padStart(2, '0');
             return `${m}:${s}`;
@@ -343,28 +345,40 @@
                 const row = document.createElement('tr');
                 row.className = "group hover:bg-surface-container-highest/40 transition-colors cursor-pointer focus-visible:bg-surface-container-highest/60 outline-none";
                 row.id = `track-row-${index}`;
-                row.tabIndex = 0; // Accessible keyboard focus
+                row.tabIndex = 0;
                 row.setAttribute('role', 'button');
                 row.setAttribute('aria-label', `Play ${trackArray[0]}`);
                 
                 row.onclick = () => player(index);
                 row.onkeydown = (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); player(index); } };
 
+                // Get static duration from incoming json dictionary array (index 3)
+                const parsedDuration = parseInt(trackArray[3], 10) || 0;
+                const displayDuration = formatTime(parsedDuration);
+
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-on-surface-variant font-body-sm index-cell">${index + 1}</td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-4">
-                            <img src="${trackArray[1]}" alt="" class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg object-cover shadow-md error-fallback">
-                            <div class="min-w-0">
-                                <p class="font-body-md text-on-surface font-semibold title-text truncate">${trackArray[0]}</p>
-                                <p class="text-body-sm text-on-surface-variant truncate">Artist Profile</p>
+                    <td class="px-2 py-4 text-on-surface-variant font-body-sm index-cell text-center">${index + 1}</td>
+                    <td class="px-2 py-4 overflow-hidden">
+                        <div class="flex items-center gap-2 max-w-full">
+                            <img src="${trackArray[1]}" alt="" class="w-10 h-10 rounded-lg object-cover shadow-md flex-shrink-0">
+                            <div class="min-w-0 flex-1">
+                                <p class="font-body-sm text-on-surface font-semibold title-text truncate text-xs sm:text-sm">${trackArray[0]}</p>
+                                <p class="text-[11px] text-on-surface-variant truncate">Artist Profile</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-right">
-                        <button onclick="removeSong(event, '${key[index]}', ${index})" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full relative z-10" aria-label="Remove ${trackArray[0]} from playlist">
-                            <span class="material-symbols-outlined text-[20px]">delete</span>
-                        </button>
+                    <td class="hidden sm:table-cell px-2 py-4 text-on-surface-variant font-mono text-xs text-center">
+                        ${displayDuration}
+                    </td>
+                    <td class="px-2 py-4 text-right">
+                        <div class="flex items-center justify-end gap-1">
+                            <button onclick="addToQueue(event, ${index})" class="p-1.5 text-on-surface-variant hover:text-secondary transition-colors rounded-full relative z-10" aria-label="Queue track">
+                                <span class="material-symbols-outlined text-[18px]">playlist_add</span>
+                            </button>
+                            <button onclick="removeSong(event, '${key[index]}', ${index})" class="p-1.5 text-on-surface-variant hover:text-error transition-colors rounded-full relative z-10" aria-label="Remove track">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </div>
                     </td>
                 `;
                 songsTbody.appendChild(row);
@@ -375,8 +389,14 @@
             }
         }
 
+        function addToQueue(event, index) {
+            event.stopPropagation();
+            songQueue.push(index);
+            window.alert(`"${value[index][0]}" added to playback queue!`);
+        }
+
         function removeSong(event, songId, index) {
-            event.stopPropagation(); // Prevents row click selection triggers
+            event.stopPropagation();
             
             fetch('/api/rmsong', {
                 method: 'POST',
@@ -388,7 +408,6 @@
             .then(res => res.json())
             .then(resData => {
                 if (resData.data === "success") {
-                    // Logic to adjust playback indices safely before altering data structures
                     let playingTargetEnded = false;
                     
                     if (index === currentsong) {
@@ -398,10 +417,12 @@
                         playingTargetEnded = true;
                     }
 
-                    // Mutate state containers
                     key.splice(index, 1);
                     value.splice(index, 1);
                     songscount = key.length;
+
+                    // Clean out dead index elements from the active queue
+                    songQueue = songQueue.map(qIdx => qIdx > index ? qIdx - 1 : qIdx).filter(qIdx => qIdx !== index);
 
                     if (songscount === 0) {
                         currentsong = 0;
@@ -445,7 +466,13 @@
             reuser(index);
 
             audio.onended = () => {
-                changer(1);
+                // Check if queue contains items
+                if (songQueue.length > 0) {
+                    let nextIndex = songQueue.shift();
+                    player(nextIndex);
+                } else {
+                    changer(1); // Standard progression
+                }
             };
         }
 
@@ -456,10 +483,10 @@
 
             updateUIElements(index);
 
-            audio.addEventListener("loadedmetadata", () => {
-                trackSlider.max = audio.duration;
-                timeTotal.textContent = formatTime(audio.duration);
-            });
+            // Immediately set max ceiling using metadata payloads
+            const customTotalDuration = parseInt(value[index][3], 10) || 0;
+            trackSlider.max = customTotalDuration;
+            timeTotal.textContent = formatTime(customTotalDuration);
 
             audio.ontimeupdate = () => {
                 if (!trackSlider.matches(':focus')) {
@@ -479,15 +506,15 @@
                     if (i === index) {
                         targetRow.classList.add('bg-primary/5');
                         targetRow.setAttribute('aria-selected', 'true');
-                        indexCell.className = "px-6 py-4 text-secondary font-bold index-cell flex items-center gap-2";
-                        indexCell.innerHTML = `<span class="material-symbols-outlined animate-pulse text-sm" aria-hidden="true">equalizer</span> ${i + 1}`;
-                        titleText.className = "font-body-md text-secondary font-bold title-text truncate";
+                        indexCell.className = "px-2 py-4 text-secondary font-bold index-cell text-center flex items-center justify-center gap-1";
+                        indexCell.innerHTML = `<span class="material-symbols-outlined animate-pulse text-xs">equalizer</span>`;
+                        if(titleText) titleText.className = "font-body-sm text-secondary font-bold title-text truncate text-xs sm:text-sm";
                     } else {
                         targetRow.classList.remove('bg-primary/5');
                         targetRow.removeAttribute('aria-selected');
-                        indexCell.className = "px-6 py-4 text-on-surface-variant font-body-sm index-cell";
+                        indexCell.className = "px-2 py-4 text-on-surface-variant font-body-sm index-cell text-center";
                         indexCell.innerHTML = `${i + 1}`;
-                        titleText.className = "font-body-md text-on-surface font-semibold title-text truncate";
+                        if(titleText) titleText.className = "font-body-sm text-on-surface font-semibold title-text truncate text-xs sm:text-sm";
                     }
                 }
             }
@@ -495,11 +522,7 @@
 
         function togglePlayback() {
             if (!audio) return;
-            if (isPlaying) {
-                pause();
-            } else {
-                play();
-            }
+            if (isPlaying) { pause(); } else { play(); }
         }
 
         function play() {
