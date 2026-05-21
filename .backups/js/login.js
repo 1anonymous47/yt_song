@@ -2,7 +2,7 @@ function login()
 {
     const username = document.getElementById('username').value;
 
-    fetch('/login',{
+    fetch('/api/login',{
         method:'POST',
         headers:{
             'Content-type':'application/json'

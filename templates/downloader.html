@@ -1,24 +1,379 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="static/downloader.js"></script>
-    <link rel="stylesheet" href="static/styles.css">
-    <title>Downloader</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Playlister - Downloader</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#23005c",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-secondary-container": "#004d44",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ca801e",
+                        "surface-container-low": "#1b1b1f",
+                        "tertiary-fixed-dim": "#ffb869",
+                        "surface-container-high": "#2a292e",
+                        "surface-bright": "#39393d",
+                        "secondary-container": "#03c6b2",
+                        "primary-container": "#a078ff",
+                        "on-surface": "#e4e1e7",
+                        "outline": "#958ea0",
+                        "on-tertiary-fixed": "#2c1700",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#673d00",
+                        "surface-tint": "#d0bcff",
+                        "tertiary": "#ffb869",
+                        "outline-variant": "#494454",
+                        "on-primary-fixed-variant": "#5516be",
+                        "secondary-fixed": "#62fae3",
+                        "surface": "#131317",
+                        "surface-container": "#1f1f23",
+                        "primary": "#d0bcff",
+                        "primary-fixed": "#e9ddff",
+                        "surface-container-highest": "#353439",
+                        "on-tertiary": "#482900",
+                        "on-primary": "#3c0091",
+                        "on-surface-variant": "#cbc3d7",
+                        "inverse-on-surface": "#303034",
+                        "secondary": "#44e2cd",
+                        "surface-container-lowest": "#0e0e12",
+                        "on-secondary-fixed-variant": "#005047",
+                        "tertiary-fixed": "#ffdcbb",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#3cddc7",
+                        "on-secondary-fixed": "#00201c",
+                        "background": "#131317",
+                        "inverse-primary": "#6d3bd7",
+                        "on-error": "#690005",
+                        "on-background": "#e4e1e7",
+                        "surface-variant": "#353439",
+                        "on-primary-container": "#340080",
+                        "inverse-surface": "#e4e1e7",
+                        "on-tertiary-container": "#3f2300",
+                        "surface-dim": "#131317"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-xs": "4px",
+                        "stack-md": "16px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "player-height": "96px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"], "body-md": ["Inter"], "body-sm": ["Inter"],
+                        "label-sm": ["Inter"], "display-lg": ["Inter"], "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"], "display-sm": ["Inter"], "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-sm": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0F0F13; color: #e4e1e7; overflow-x: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(26, 26, 34, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        audio::-webkit-media-controls-panel { background-color: #1f1f23; }
+        audio::-webkit-media-controls-current-time-display, 
+        audio::-webkit-media-controls-time-remaining-display { color: #e4e1e7; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0F0F13; }
+        ::-webkit-scrollbar-thumb { background: #494454; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #958ea0; }
+        
+        /* High visibility accessibility tracking configurations */
+        *:focus-visible { outline: 2px solid #44e2cd; outline-offset: 2px; }
+    </style>
 </head>
-<body>
-    <a href="/playlisterpage">Playlist</a>
-    <a href="/downloaderpage">Downloader</a>
-    <a href="/searcherpage">Searcher</a>
-    <a href="/loginpage">Login</a>
-    <h1>Username : </h1><input type="text" id="username" >
-    <!-- <h1>Password : </h1><input type="text" id="password"> -->
-    <h1>Youtube Url : </h1><input type="url" id="searchurl"  >
-    <button onclick="downloader()">Download</button>
-    <p id="status"></p>
-    <div id="audiotag">
+<body class="font-body-md text-body-md min-h-screen flex flex-col">
 
-    </div>
+    <!-- Accessible Dynamic Toast Center Notifications Area -->
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none max-w-md w-full sm:w-auto" role="live" aria-live="polite"></div>
+
+    <!-- Responsive Mobile Drawer Navigation Overlay Layer -->
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0" aria-hidden="true"></div>
+
+    <!-- SideNavBar (Responsive Off-Canvas Slide Drawer on Mobile Screen Sizes) -->
+    <aside id="side-nav" class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-stack-lg z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0" aria-label="Main Navigation Profile Drawer">
+        <div class="px-6 mb-stack-lg flex justify-between items-center">
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-primary">Playlister</h1>
+                <p class="font-label-md text-label-md text-on-surface-variant opacity-70">Premium Audio</p>
+            </div>
+            <!-- Close Toggle Widget Panel Trigger Element for Mobile Displays -->
+            <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-on-surface-variant hover:text-on-surface rounded-full focus-visible:ring-2 focus-visible:ring-secondary/50" aria-label="Close layout navigation bar menu">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+        </div>
+        <nav class="flex-1 space-y-2">
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#">
+                <span class="material-symbols-outlined" aria-hidden="true">home</span>
+                <span class="font-body-md">Home</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-secondary font-bold border-l-4 border-secondary bg-secondary/10 transition-colors" href="/downloader" aria-current="page">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;" aria-hidden="true">download</span>
+                <span class="font-body-md">Downloader</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/searcher">
+                <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                <span class="font-body-md">Searcher</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/playlister">
+                <span class="material-symbols-outlined" aria-hidden="true">playlist_add</span>
+                <span class="font-body-md">Playlist</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Shell Layout Base Wrapper Block -->
+    <main class="w-full lg:pl-[260px] pb-player-height flex-1 transition-all duration-300">
+        <!-- TopNavBar Structure Header Platform Node -->
+        <header class="fixed top-0 right-0 left-0 lg:left-[260px] h-16 bg-surface/70 backdrop-blur-xl flex justify-between items-center px-4 lg:px-margin-desktop z-40 border-b border-outline-variant/10">
+            <div class="flex items-center flex-1 max-w-xl gap-3">
+                <!-- Mobile Navigation Toggler Widget Element Entry Point -->
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-on-surface-variant hover:text-on-surface rounded-lg focus-visible:ring-2 focus-visible:ring-secondary/50" aria-label="Open mobile workspace navigation menu panel">
+                    <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-4 lg:gap-6">
+                <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-1 rounded-full" aria-label="Notifications System Dashboard">
+                    <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-1 rounded-full" aria-label="Settings Environment Configurations">
+                    <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+                </button>
+                <div class="hidden sm:block h-6 w-[1px] bg-outline-variant/30 mx-1"></div>
+                <button onclick="logout()" class="font-label-md text-label-md text-on-surface-variant hover:text-error transition-colors cursor-pointer outline-none px-2 py-1 rounded">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Canvas Fluid Grid Core Area Block -->
+        <section class="pt-24 px-4 lg:px-margin-desktop">
+            <div class="mb-stack-lg">
+                <h2 class="text-3xl lg:text-display-sm font-bold text-on-surface mb-2">YouTube Downloader</h2>
+                <p class="font-body-md text-on-surface-variant opacity-80 text-sm lg:text-base">Transform your favorite YouTube videos into high-fidelity audio tracks for your library.</p>
+            </div>
+
+            <!-- Main Control Input Target Action Area Base Shell -->
+            <div class="glass-panel p-4 lg:p-6 rounded-xl border border-outline-variant/10 mb-stack-lg shadow-xl">
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <div class="relative flex-1 w-full">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary" aria-hidden="true">link</span>
+                        <input id="searchurl" class="w-full bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 border border-outline-variant/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20 rounded-xl py-3 pl-12 pr-4 text-body-sm transition-all outline-none" placeholder="Paste YouTube video link here..." type="url" aria-label="YouTube target video media stream web locator link address parameter path">
+                    </div>
+                    <button id="fetch-btn" onclick="downloader()" class="w-full md:w-auto px-6 py-3.5 bg-secondary text-on-secondary-fixed font-bold rounded-xl hover:scale-105 active:scale-95 shadow-lg shadow-secondary/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-secondary/50">
+                        <span id="fetch-icon" class="material-symbols-outlined" aria-hidden="true">downloading</span>
+                        <span id="status">Fetch Audio</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Async Targets Active Content Render Slot Node -->
+            <div id="audiotag" class="w-full max-w-2xl mx-auto flex flex-col items-center text-center px-1" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script>
+        let username = document.getElementById('profile-name-display')?.innerText || "username";
+        const sideNav = document.getElementById('side-nav');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // Accessible Display Screen Toggle Interaction Architecture Controller Module
+        function toggleMobileSidebar() {
+            const isHidden = sideNav.classList.contains('-translate-x-full');
+            if (isHidden) {
+                sideNav.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                setTimeout(() => sidebarOverlay.classList.add('opacity-100'), 10);
+            } else {
+                sideNav.classList.add('-translate-x-full');
+                sidebarOverlay.classList.remove('opacity-100');
+                setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Framework Dynamic Global Alert Display Management Interface Pipeline
+        function triggerToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `glass-panel pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-xl border shadow-2xl translate-y-3 opacity-0 transition-all duration-300 border-l-4 z-[110]`;
+            
+            if (type === 'success') {
+                toast.classList.add('border-l-secondary', 'border-outline-variant/20');
+                toast.innerHTML = `<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1" aria-hidden="true">check_circle</span><p class="text-body-sm text-on-surface font-medium">${message}</p>`;
+            } else if (type === 'error') {
+                toast.classList.add('border-l-error', 'border-error-container/30');
+                toast.innerHTML = `<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1" aria-hidden="true">gpp_bad</span><p class="text-body-sm text-on-surface font-medium">${message}</p>`;
+            } else {
+                toast.classList.add('border-l-primary', 'border-outline-variant/20');
+                toast.innerHTML = `<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1" aria-hidden="true">info</span><p class="text-body-sm text-on-surface font-medium">${message}</p>`;
+            }
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-3', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function logout() {
+            fetch("/api/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => { window.location.href = data["data"]; })
+            .catch(() => { window.location.href = "/login"; });
+        }
+
+        function downloader() {
+            const audiotag = document.getElementById('audiotag');
+            audiotag.replaceChildren();
+            
+            const url = document.getElementById('searchurl').value.trim();
+            const status = document.getElementById('status');
+            const fetchIcon = document.getElementById('fetch-icon');
+            const fetchBtn = document.getElementById('fetch-btn');
+
+            if (!url) {
+                triggerToast("Please supply an input YouTube link path.", "error");
+                return;
+            }
+
+            status.innerHTML = "Downloading...";
+            fetchIcon.classList.add('animate-spin');
+            fetchBtn.disabled = true;
+
+            fetch('/api/downloader', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({'url': url})
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetchIcon.classList.remove('animate-spin');
+                fetchBtn.disabled = false;
+
+                if (data['data'] === "success") {
+                    status.innerHTML = "Success";
+                    triggerToast("Stream loaded! Preview track generated below.", "success");
+
+                    const previewCard = document.createElement('div');
+                    previewCard.className = "w-full glass-panel rounded-2xl p-4 lg:p-6 border border-outline-variant/10 shadow-2xl flex flex-col items-center gap-5 mt-4 text-center";
+
+                    const image = document.createElement('img');
+                    image.src = data['videosrc'];
+                    image.className = "w-full max-w-md aspect-video object-cover rounded-xl shadow-lg border border-outline-variant/5";
+                    image.alt = "YouTube video thumbnail card meta media content layout image capture";
+
+                    const title = document.createElement('h3');
+                    title.className = "text-xl lg:text-headline-md font-bold text-on-surface line-clamp-2 max-w-xl px-2";
+                    title.innerHTML = data['audiotittle'];
+
+                    const sound = document.createElement('audio');
+                    sound.id = 'audio-player';
+                    sound.controls = true;
+                    sound.src = data['audiosrc'];
+                    sound.type = 'audio/webm';
+                    sound.className = "w-full max-w-lg mt-2 outline-none px-1";
+                    sound.setAttribute('aria-label', `Audio media stream preview controller playback node tracking targeting context for ${data['audiotittle']}`);
+
+                    const button = document.createElement('button');
+                    button.onclick = () => playlistadder(data['audioid'], button);
+                    button.className = "w-full max-w-xs py-3.5 bg-primary text-on-primary-fixed font-bold rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-2 mt-2 focus-visible:ring-2 focus-visible:ring-primary/50";
+                    button.innerHTML = `<span class="material-symbols-outlined text-body-md" aria-hidden="true">playlist_add</span> Add to Playlist`;
+
+                    previewCard.appendChild(image);
+                    previewCard.appendChild(title);
+                    previewCard.appendChild(sound);
+                    previewCard.appendChild(button);
+                    audiotag.appendChild(previewCard);
+                } 
+                else if (data['data'] === "fail") {
+                    status.innerHTML = "Invalid username";
+                    triggerToast("Session authentication failure: Invalid profile context.", "error");
+                } 
+                else {
+                    status.innerHTML = "Invalid Url";
+                    triggerToast("Malformed media source parameters: Check target URL.", "error");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                status.innerHTML = "Fetch Audio";
+                fetchIcon.classList.remove('animate-spin');
+                fetchBtn.disabled = false;
+                triggerToast("Connection failure targeting server sharding nodes.", "error");
+            });
+        }
+
+        function playlistadder(audioid, buttonElement) {
+            const originalButtonHTML = buttonElement.innerHTML;
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = `<span class="material-symbols-outlined text-body-md animate-spin" aria-hidden="true">sync</span> Sharding Record...`;
+
+            fetch('/api/playlistadder', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({'audioid': audioid })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data['data'] === "success") {
+                    triggerToast("Track committed to your subscription repository space!", "success");
+                    buttonElement.className = "w-full max-w-xs py-3.5 bg-secondary/20 text-secondary border border-secondary/30 font-bold rounded-xl flex items-center justify-center gap-2 mt-2 pointer-events-none";
+                    buttonElement.innerHTML = `<span class="material-symbols-outlined text-body-md" style="font-variation-settings: 'FILL' 1" aria-hidden="true">cloud_done</span> Stored in Playlist`;
+                } else {
+                    triggerToast("Identity Collision: This track profile already rests inside storage.", "error");
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalButtonHTML;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = originalButtonHTML;
+                triggerToast("Network transaction rejected by database storage lock.", "error");
+            });
+        }
+    </script>
 </body>
+<script src="static/js/common.js"></script>
 </html>

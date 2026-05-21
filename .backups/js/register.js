@@ -2,7 +2,7 @@ function register()
 {
     const username = document.getElementById('username').value;
 
-    fetch('/register',{
+    fetch('/api/register',{
         method:'POST',
         headers:{
             'Content-type':'application/json'

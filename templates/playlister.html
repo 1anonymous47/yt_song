@@ -1,34 +1,568 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="static/playlister.js"></script>
-    <link rel="stylesheet" href="static/styles.css">
-    <title>PLaylister</title>
-</head>
-<body>
-    <a href="/downloaderpage">Downloader</a>
-    <a href="/playlisterpage">Playlist</a>
-    <a href="/searcherpage">Searcher</a>
-    <a href="/loginpage">Login</a>
-    <h1>Username : </h1><input type="text" id="username">
-    <!-- <h1>Password : </h1><input type="text" id="password"> -->
-    <button onclick="playlistadder()">GetPlaylist</button>
-    <div id="audio">
-        <br>
-        <div id="audiotag">
-            
-        </div>
-        <button onclick="changer(0)">Previous</button>
-        <button onclick="play()">Play</button>
-        <button onclick="pause()">Pause</button>
-        <button onclick="changer(1)">Next</button>
-
-    </div>
-    <div id="songs">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Playlister - My Music Library</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#23005c",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-secondary-container": "#004d44",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ca801e",
+                        "surface-container-low": "#1b1b1f",
+                        "tertiary-fixed-dim": "#ffb869",
+                        "surface-container-high": "#2a292e",
+                        "surface-bright": "#39393d",
+                        "secondary-container": "#03c6b2",
+                        "primary-container": "#a078ff",
+                        "on-surface": "#e4e1e7",
+                        "outline": "#958ea0",
+                        "on-tertiary-fixed": "#2c1700",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#673d00",
+                        "surface-tint": "#d0bcff",
+                        "tertiary": "#ffb869",
+                        "outline-variant": "#494454",
+                        "on-primary-fixed-variant": "#5516be",
+                        "secondary-fixed": "#62fae3",
+                        "surface": "#131317",
+                        "surface-container": "#1f1f23",
+                        "primary": "#d0bcff",
+                        "primary-fixed": "#e9ddff",
+                        "surface-container-highest": "#353439",
+                        "on-tertiary": "#482900",
+                        "on-primary": "#3c0091",
+                        "on-surface-variant": "#cbc3d7",
+                        "inverse-on-surface": "#303034",
+                        "secondary": "#44e2cd",
+                        "surface-container-lowest": "#0e0e12",
+                        "on-secondary-fixed-variant": "#005047",
+                        "tertiary-fixed": "#ffdcbb",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#3cddc7",
+                        "on-secondary-fixed": "#00201c",
+                        "background": "#131317",
+                        "inverse-primary": "#6d3bd7",
+                        "on-error": "#690005",
+                        "on-background": "#e4e1e7",
+                        "surface-variant": "#353439",
+                        "on-primary-container": "#340080",
+                        "inverse-surface": "#e4e1e7",
+                        "on-tertiary-container": "#3f2300",
+                        "on-secondary": "#003731",
+                        "surface-dim": "#131317"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-xs": "4px",
+                        "stack-md": "16px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "player-height": "96px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"], "body-md": ["Inter"], "body-sm": ["Inter"],
+                        "label-sm": ["Inter"], "display-lg": ["Inter"], "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"], "display-sm": ["Inter"], "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-sm": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0F0F13; color: #e4e1e7; overflow-x: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(26, 26, 34, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .track-gradient { background: linear-gradient(90deg, #d0bcff 0%, #44e2cd 100%); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0F0F13; }
+        ::-webkit-scrollbar-thumb { background: #494454; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #958ea0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #e4e1e7; cursor: pointer; }
         
-    
-    </div>
+        /* Focus state improvements for accessibility */
+        *:focus-visible { outline: 2px solid #44e2cd; outline-offset: 2px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen flex flex-col">
+
+    <!-- Mobile Navigation Backdrop Overlay -->
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0" aria-hidden="true"></div>
+
+    <!-- SideNavBar (Responsive Mobile Drawer / Desktop Fixed) -->
+    <aside id="side-nav" class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-stack-lg z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0" aria-label="Main Navigation">
+        <div class="px-6 mb-stack-lg flex justify-between items-center">
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-primary">Playlister</h1>
+                <p class="font-label-md text-label-md text-on-surface-variant opacity-70">Premium Audio</p>
+            </div>
+            <!-- Close button for mobile -->
+            <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-on-surface-variant hover:text-on-surface rounded-full" aria-label="Close menu">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <nav class="flex-1 space-y-2">
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#">
+                <span class="material-symbols-outlined" aria-hidden="true">home</span>
+                <span class="font-body-md">Home</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/downloader">
+                <span class="material-symbols-outlined" aria-hidden="true">download</span>
+                <span class="font-body-md">Downloader</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/searcher">
+                <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                <span class="font-body-md">Searcher</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-primary font-bold border-l-4 border-primary bg-primary/10 transition-colors" href="/playlister" aria-current="page">
+                <span class="material-symbols-outlined" aria-hidden="true">playlist_add</span>
+                <span class="font-body-md">Playlist</span>
+            </a>
+        </nav>
+        <div class="px-6 mt-auto">
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-highest/20 border border-outline-variant/10">
+                <img alt="User Profile" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcn01w_-XLAiJGnTrvCz09thSJBfSSI2i0ktBIwNdkuZDUTAHvNsWTUx0SOHESqWLHJAkt5hWsvpUnDqd7WmO_NkysdC0ErkhoSrLYIN3k25Zm8nO2yn8b-fdkNNHx9g0EJbXdy7JorKg2WboT2L14s6Y1QOOUrgiMSKzK22bhZygezUdOm8VKPCKWro32yhfkWSYiKro4kgVhDcCGkwGXm3q6uU1-EU2vvKkPXfT2DQymiMPIpdfhIWpC7yqkq7HBgUlw-5Lorp4">
+                <div class="overflow-hidden">
+                    <p class="font-label-md text-on-surface truncate">Alex Rivera</p>
+                    <p class="text-[10px] text-on-surface-variant">Pro Subscriber</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Shell -->
+    <main class="w-full lg:pl-[260px] pb-[160px] lg:pb-player-height flex-1 transition-all duration-300">
+        <!-- TopNavBar -->
+        <header class="fixed top-0 right-0 left-0 lg:left-[260px] h-16 bg-surface/80 backdrop-blur-xl flex justify-between items-center px-4 lg:px-margin-desktop z-40 border-b border-outline-variant/5">
+            <div class="flex items-center flex-1 max-w-xl gap-3">
+                <!-- Hamburger Menu Button for mobile -->
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-on-surface-variant hover:text-on-surface rounded-lg" aria-label="Open navigation menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                
+                <div class="relative w-full">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" aria-hidden="true">search</span>
+                    <input class="w-full bg-surface-container-highest/30 border-none rounded-full py-2 pl-12 pr-4 text-body-sm focus:ring-2 focus:ring-secondary/50 transition-all text-on-surface placeholder-on-surface-variant/50" placeholder="Search for tracks..." type="text" aria-label="Search tracks, artists, or albums">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 lg:gap-6 ml-2">
+                <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-1 rounded-full" aria-label="Notifications">
+                    <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-1 rounded-full" aria-label="Settings">
+                    <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+                </button>
+                <div class="hidden sm:block h-6 w-[1px] bg-outline-variant/30 mx-1"></div>
+                
+                <button onclick="logout()" class="font-label-md text-label-md text-on-surface-variant hover:text-error transition-colors cursor-pointer outline-none px-2 py-1 rounded">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Canvas -->
+        <section class="pt-24 px-4 lg:px-margin-desktop">
+            <div class="flex justify-between items-end mb-stack-lg">
+                <div>
+                    <h2 class="text-3xl lg:text-display-sm font-bold text-on-surface mb-2">My Music Library</h2>
+                    <p class="font-body-md text-on-surface-variant opacity-80 text-sm lg:text-base">Discover your sonic journey, organized and elevated.</p>
+                </div>
+            </div>
+
+            <!-- Song List Responsive Table Container -->
+            <div class="glass-panel rounded-xl overflow-x-auto border border-outline-variant/10 mb-stack-lg">
+                <table class="w-full text-left border-collapse min-w-[600px] lg:min-w-full">
+                    <thead>
+                        <tr class="text-label-md text-on-surface-variant border-b border-outline-variant/10 bg-surface-container-low/50">
+                            <th scope="col" class="px-6 py-4 font-semibold w-16">#</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Title</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-right w-24">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="songs-tbody" class="divide-y divide-outline-variant/5">
+                        <!-- Content generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- BottomPlayerBar (Highly Optimized for Mobile Touch) -->
+    <footer class="fixed bottom-0 left-0 w-full h-auto lg:h-player-height bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/10 flex flex-col lg:flex-row justify-between items-center px-4 lg:px-margin-desktop py-3 lg:py-0 z-50 shadow-lg gap-3 lg:gap-0" role="contentinfo" aria-label="Audio Player">
+        
+        <!-- Track Thumbnail Panel -->
+        <div class="flex items-center justify-between lg:justify-start gap-4 w-full lg:w-[30%] order-1">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <img id="current-track-img" alt="Cover Art" class="w-12 h-12 lg:w-14 lg:h-14 rounded-lg object-cover shadow-lg border border-outline-variant/10 flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs973Smk9vNCP8pFQqUTWPhMhNFyqZxjVwbaUFbrmozhLqdHHVKevPGN-PqiZQrHEb9pYA3ddRm4FSph0_fXeQnTjmQoLzE6mPub2vqDdfO7EEWg4J-Hpx2KBZPnqT32V3ARh55gwd_ZprQyJx9_xF5fRCSSHmSmTGLavkg4Jr7junYR3VjTIL7jlxw_BNWFvgBsNoQ_vzN3uOOxi36TBvMxXpRsI990oywMghTbf3m0Vaeh0YaqmjeVSfdwr2-UmfkUhS3HEsGWw">
+                <div class="overflow-hidden">
+                    <p id="current-track-title" class="font-body-md text-primary font-bold truncate text-sm lg:text-base">---</p>
+                    <p id="current-track-album" class="text-xs lg:text-body-sm text-on-surface-variant truncate opacity-80">---</p>
+                </div>
+            </div>
+            <button class="text-on-surface-variant hover:text-secondary p-2 ml-1" aria-label="Add to favorites">
+                <span id="fav-icon" class="material-symbols-outlined text-[22px]">favorite</span>
+            </button>
+        </div>
+
+        <!-- Master Playback Systems -->
+        <div class="flex flex-col items-center gap-1.5 w-full lg:w-[40%] order-3 lg:order-2">
+            <div class="flex items-center gap-6 lg:gap-8">
+                <button class="text-on-surface-variant hover:text-primary p-1" aria-label="Shuffle"><span class="material-symbols-outlined text-[22px]">shuffle</span></button>
+                <button onclick="changer(0)" class="text-on-surface hover:text-primary p-1" aria-label="Previous track"><span class="material-symbols-outlined text-[26px]">skip_previous</span></button>
+                <button onclick="togglePlayback()" id="master-play-btn" class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-primary text-on-primary flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30" aria-label="Play or Pause">
+                    <span class="material-symbols-outlined text-2xl lg:text-3xl" id="play-icon">play_arrow</span>
+                </button>
+                <button onclick="changer(1)" class="text-on-surface hover:text-primary p-1" aria-label="Next track"><span class="material-symbols-outlined text-[26px]">skip_next</span></button>
+                <button class="text-on-surface-variant hover:text-primary p-1" aria-label="Repeat"><span class="material-symbols-outlined text-[22px]">repeat</span></button>
+            </div>
+            <!-- Interactive Playback Progress Timeline -->
+            <div class="w-full flex items-center gap-3 px-1">
+                <span id="time-current" class="text-[11px] text-on-surface-variant w-9 text-right font-mono">0:00</span>
+                <div class="relative flex-1 flex items-center">
+                    <input type="range" id="track-slider" min="0" value="0" step="0.1" class="w-full h-1.5 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-primary outline-none py-1" aria-label="Track progress">
+                </div>
+                <span id="time-total" class="text-[11px] text-on-surface-variant w-9 font-mono">0:00</span>
+            </div>
+        </div>
+
+        <!-- Master Volume Systems (Hidden/Simplified on small mobile devices to prevent clutter) -->
+        <div class="hidden sm:flex items-center justify-end gap-4 lg:gap-6 w-full lg:w-[30%] order-2 lg:order-3 border-t lg:border-t-0 pt-2 lg:pt-0 border-outline-variant/5">
+            <button class="text-on-surface-variant hover:text-primary p-1" aria-label="Lyrics"><span class="material-symbols-outlined text-xl">mic_external_on</span></button>
+            <button class="text-on-surface-variant hover:text-primary p-1" aria-label="Queue"><span class="material-symbols-outlined text-xl">playlist_play</span></button>
+            <div class="flex items-center gap-2 w-24 lg:w-32">
+                <span class="material-symbols-outlined text-xl text-on-surface-variant" aria-hidden="true">volume_up</span>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.7" class="w-full h-1 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-on-surface-variant outline-none" aria-label="Volume slider">
+            </div>
+            <button class="hidden lg:block text-on-surface-variant hover:text-primary p-1" aria-label="Fullscreen"><span class="material-symbols-outlined text-xl">open_in_full</span></button>
+        </div>
+    </footer>
+
+    <script>
+        let songscount;
+        let currentsong = 0;
+        let key = [];
+        let value = [];
+        let audio = null;
+        let isPlaying = false;
+
+        // UI Element Selectors
+        const songsTbody = document.getElementById('songs-tbody');
+        const trackSlider = document.getElementById('track-slider');
+        const volumeSlider = document.getElementById('volume-slider');
+        const timeCurrent = document.getElementById('time-current');
+        const timeTotal = document.getElementById('time-total');
+        const playIcon = document.getElementById('play-icon');
+        const trackImg = document.getElementById('current-track-img');
+        const trackTitle = document.getElementById('current-track-title');
+        const trackAlbum = document.getElementById('current-track-album');
+        const sideNav = document.getElementById('side-nav');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // Mobile responsive sidebar toggler
+        function toggleMobileSidebar() {
+            const isHidden = sideNav.classList.contains('-translate-x-full');
+            if (isHidden) {
+                sideNav.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                setTimeout(() => sidebarOverlay.classList.add('opacity-100'), 10);
+            } else {
+                sideNav.classList.add('-translate-x-full');
+                sidebarOverlay.classList.remove('opacity-100');
+                setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Format timestamps cleanly
+        function formatTime(secs) {
+            if (isNaN(secs)) return "0:00";
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function playlistadder() {
+            fetch('/api/playlistgetter')
+            .then(res => res.json())
+            .then(data => {
+                if (data.data === "nouser") {
+                    window.alert("Invalid Username");
+                    return;
+                }
+                if (data.data === "noplay") {
+                    window.alert("Empty Playlist");
+                    return;
+                }
+
+                key = Object.keys(data);
+                value = Object.values(data);
+                songscount = key.length;
+
+                renderPlaylistTable();
+                
+                if (songscount > 0) {
+                    initAudioContext(currentsong);
+                }
+            })
+            .catch(err => {
+                console.error("Local data fallback injection active.", err);
+            });
+        }
+
+        function renderPlaylistTable() {
+            songsTbody.innerHTML = '';
+            
+            value.forEach((trackArray, index) => {
+                const row = document.createElement('tr');
+                row.className = "group hover:bg-surface-container-highest/40 transition-colors cursor-pointer focus-visible:bg-surface-container-highest/60 outline-none";
+                row.id = `track-row-${index}`;
+                row.tabIndex = 0; // Accessible keyboard focus
+                row.setAttribute('role', 'button');
+                row.setAttribute('aria-label', `Play ${trackArray[0]}`);
+                
+                row.onclick = () => player(index);
+                row.onkeydown = (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); player(index); } };
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-on-surface-variant font-body-sm index-cell">${index + 1}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <img src="${trackArray[1]}" alt="" class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg object-cover shadow-md error-fallback">
+                            <div class="min-w-0">
+                                <p class="font-body-md text-on-surface font-semibold title-text truncate">${trackArray[0]}</p>
+                                <p class="text-body-sm text-on-surface-variant truncate">Artist Profile</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="removeSong(event, '${key[index]}', ${index})" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full relative z-10" aria-label="Remove ${trackArray[0]} from playlist">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                    </td>
+                `;
+                songsTbody.appendChild(row);
+            });
+            
+            if (audio) {
+                updateUIElements(currentsong);
+            }
+        }
+
+        function removeSong(event, songId, index) {
+            event.stopPropagation(); // Prevents row click selection triggers
+            
+            fetch('/api/rmsong', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "song_id": songId })
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (resData.data === "success") {
+                    // Logic to adjust playback indices safely before altering data structures
+                    let playingTargetEnded = false;
+                    
+                    if (index === currentsong) {
+                        if (audio) audio.pause();
+                        isPlaying = false;
+                        playIcon.textContent = "play_arrow";
+                        playingTargetEnded = true;
+                    }
+
+                    // Mutate state containers
+                    key.splice(index, 1);
+                    value.splice(index, 1);
+                    songscount = key.length;
+
+                    if (songscount === 0) {
+                        currentsong = 0;
+                        trackImg.src = "https://lh3.googleusercontent.com/aida-public/AB6AXuBs973Smk9vNCP8pFQqUTWPhMhNFyqZxjVwbaUFbrmozhLqdHHVKevPGN-PqiZQrHEb9pYA3ddRm4FSph0_fXeQnTjmQoLzE6mPub2vqDdfO7EEWg4J-Hpx2KBZPnqT32V3ARh55gwd_ZprQyJx9_xF5fRCSSHmSmTGLavkg4Jr7junYR3VjTIL7jlxw_BNWFvgBsNoQ_vzN3uOOxi36TBvMxXpRsI990oywMghTbf3m0Vaeh0YaqmjeVSfdwr2-UmfkUhS3HEsGWw";
+                        trackTitle.textContent = "---";
+                        trackAlbum.textContent = "---";
+                        timeCurrent.textContent = "0:00";
+                        timeTotal.textContent = "0:00";
+                        trackSlider.value = 0;
+                        audio = null;
+                    } else {
+                        if (index < currentsong) {
+                            currentsong--;
+                        } else if (currentsong >= songscount) {
+                            currentsong = songscount - 1;
+                        }
+                        
+                        if (playingTargetEnded) {
+                            initAudioContext(currentsong);
+                        }
+                    }
+
+                    renderPlaylistTable();
+                } else {
+                    window.alert("Failed to remove song.");
+                }
+            })
+            .catch(err => {
+                console.error("Failed handling removal API.", err);
+            });
+        }
+
+        function initAudioContext(index) {
+            if (audio) {
+                audio.pause();
+            }
+
+            audio = new Audio('/static/audios/' + value[index][2]);
+            audio.volume = volumeSlider.value;
+            
+            reuser(index);
+
+            audio.onended = () => {
+                changer(1);
+            };
+        }
+
+        function reuser(index) {
+            trackImg.src = value[index][1];
+            trackTitle.textContent = value[index][0];
+            trackAlbum.textContent = "Premium Release";
+
+            updateUIElements(index);
+
+            audio.addEventListener("loadedmetadata", () => {
+                trackSlider.max = audio.duration;
+                timeTotal.textContent = formatTime(audio.duration);
+            });
+
+            audio.ontimeupdate = () => {
+                if (!trackSlider.matches(':focus')) {
+                    trackSlider.value = audio.currentTime;
+                }
+                timeCurrent.textContent = formatTime(audio.currentTime);
+            };
+        }
+
+        function updateUIElements(index) {
+            for (let i = 0; i < songscount; i++) {
+                const targetRow = document.getElementById(`track-row-${i}`);
+                if (targetRow) {
+                    const indexCell = targetRow.querySelector('.index-cell');
+                    const titleText = targetRow.querySelector('.title-text');
+                    
+                    if (i === index) {
+                        targetRow.classList.add('bg-primary/5');
+                        targetRow.setAttribute('aria-selected', 'true');
+                        indexCell.className = "px-6 py-4 text-secondary font-bold index-cell flex items-center gap-2";
+                        indexCell.innerHTML = `<span class="material-symbols-outlined animate-pulse text-sm" aria-hidden="true">equalizer</span> ${i + 1}`;
+                        titleText.className = "font-body-md text-secondary font-bold title-text truncate";
+                    } else {
+                        targetRow.classList.remove('bg-primary/5');
+                        targetRow.removeAttribute('aria-selected');
+                        indexCell.className = "px-6 py-4 text-on-surface-variant font-body-sm index-cell";
+                        indexCell.innerHTML = `${i + 1}`;
+                        titleText.className = "font-body-md text-on-surface font-semibold title-text truncate";
+                    }
+                }
+            }
+        }
+
+        function togglePlayback() {
+            if (!audio) return;
+            if (isPlaying) {
+                pause();
+            } else {
+                play();
+            }
+        }
+
+        function play() {
+            if (!audio) return;
+            audio.play();
+            isPlaying = true;
+            playIcon.textContent = "pause";
+            document.getElementById('master-play-btn').setAttribute('aria-label', 'Pause');
+        }
+
+        function pause() {
+            if (!audio) return;
+            audio.pause();
+            isPlaying = false;
+            playIcon.textContent = "play_arrow";
+            document.getElementById('master-play-btn').setAttribute('aria-label', 'Play');
+        }
+
+        function player(index) {
+            currentsong = index;
+            initAudioContext(index);
+            play();
+        }
+
+        function changer(direction) {
+            if (direction === 0) {
+                if (currentsong === 0) {
+                    window.alert("First track of playlist");
+                    return;
+                }
+                currentsong--;
+            } else {
+                if (currentsong === key.length - 1) {
+                    window.alert("Last track of playlist");
+                    return;
+                }
+                currentsong++;
+            }
+
+            initAudioContext(currentsong);
+            play();
+        }
+
+        trackSlider.addEventListener("input", () => {
+            if (audio) audio.currentTime = trackSlider.value;
+        });
+
+        volumeSlider.addEventListener("input", () => {
+            if (audio) audio.volume = volumeSlider.value;
+        });
+
+        const favBtn = document.getElementById('fav-icon');
+        if (favBtn) {
+            favBtn.parentElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isFilled = favBtn.style.fontVariationSettings?.includes("'FILL' 1");
+                favBtn.style.fontVariationSettings = isFilled ? "'FILL' 0" : "'FILL' 1";
+                favBtn.classList.toggle('text-secondary');
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', playlistadder);
+    </script>
 </body>
+<script src="static/js/common.js"></script>
 </html>

@@ -4,7 +4,7 @@ function searcher()
     list.replaceChildren()
     window.alert("Wait until before pressing any other further request you will receive response in short time")
     const searchurl = document.getElementById('searchurl').value;
-    fetch('/searcher',{
+    fetch('/api/searcher',{
         method:"POST",
         headers:{
             'Content-Type':'application/json'
@@ -47,13 +47,13 @@ function downloader(element)
     //const username = document.getElementById('username').value;
     const url = "https://www.youtube.com/watch?v="+element;
 
-    fetch('/downloader',{
+    fetch('/api/downloader',{
         method: "POST",
         headers: {
             'Content-Type': 'application/json' // Set Content-Type header for JSON data
         },
         credentials:'include',
-        body: JSON.stringify({ 'url':url,'username':username, }),
+        body: JSON.stringify({ 'url':url }),
     })
     .then(res=>res.json())
     .then(data=>{
@@ -80,13 +80,13 @@ function playlistadder(audioid)
 {
 
     //const username = document.getElementById('username').value;
-    fetch('/playlistadder',{
+    fetch('/api/playlistadder',{
         method: "POST",
         headers: {
             'Content-Type': 'application/json' 
         },
         credentials:'include',
-        body: JSON.stringify({ "username":username,'audioid':audioid }),
+        body: JSON.stringify({'audioid':audioid }),
     })
     .then(res=>res.json())
     .then(data=>{
