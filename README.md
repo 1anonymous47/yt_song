@@ -55,7 +55,7 @@ YouTune is a Flask-powered web application that allows users to download songs v
 
 4. **Run the Application**
    ```bash
-   flask run
+   python app.py
    ```
    The app will be available at `http://127.0.0.1:5000`.
 
