@@ -1,4 +1,4 @@
-# 🎵 YouTune: YouTube Playlist & Downloader
+# 🎵 yt_song: YouTube Songs Downloader & Playlister
 
 YouTune is a Flask-powered web application that allows users to download songs via YouTube URLs, search for tracks directly, and manage them in a Spotify-style playlist. With a focus on simplicity and user experience, YouTune bridges the gap between YouTube's vast library and your personal offline collection.
 
